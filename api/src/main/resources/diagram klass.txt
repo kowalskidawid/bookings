@@ -1,0 +1,73 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+
+enum UserType {
+  ADMIN
+  EMPLOYER
+  CUSTOMER
+}
+
+enum AppointmentStatus {
+  BOOKED
+  CONFIRMED
+  FINISHED
+  CANCELED
+}
+
+class User <<Entity>> {
+  - id: Long
+  - userType: UserType
+  - email: String
+  - password: String
+  - firstName: String
+  - lastName: String
+  - phoneNumber: String
+}
+
+class Employer <<Entity>> {
+  - services: Set<Service>
+  - availabilities: Set<Availability>
+}
+
+class Service <<Entity>> {
+  - id: Long
+  - name: String
+  - timeInMinutes: int
+}
+
+class Availability <<Entity>> {
+  - id: Long
+  - dayOfWeek: DayOfWeek
+  - startAt: LocalTime
+  - endAt: LocalTime
+}
+
+class Appointment <<Entity>> {
+  - id: Long
+  - readableId: String
+  - client: User
+  - employer: User
+  - services: Set<Service>
+  - startAt: LocalDateTime
+  - endAt: LocalDateTime
+  - status: AppointmentStatus
+}
+
+' Relacje dziedziczenia
+User <|-- Employer : <<extends>>
+
+' Relacje asocjacji i kompozycji
+Appointment "*" --> "1" User : "client"
+Appointment "*" --> "1" User : "employer"
+Appointment "*" --> "*" Service : "services"
+
+Employer "*" --> "*" Service : "services"
+Employer "*" --> "*" Availability : "availabilities"
+
+' Zależności do enumów
+User *-left- UserType
+Appointment *-right- AppointmentStatus
+
+@enduml

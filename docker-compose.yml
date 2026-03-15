@@ -1,0 +1,61 @@
+services:
+  app:
+    build:
+      context: ./app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    networks:
+      - bookings_network
+
+  api:
+    build:
+      context: ./api
+    ports:
+      - "8000:8000"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/bookings?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update 
+      - SPRING_MAIL_HOST=mailhog
+      - SPRING_MAIL_PORT=1025
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=false
+      - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=false
+    depends_on:
+      - mysql
+      - mailhog
+    networks:
+      - bookings_network
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: bookings
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - bookings_network
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - bookings_network
+
+networks:
+  bookings_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
