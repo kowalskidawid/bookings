@@ -1,8 +1,6 @@
 package io.ilaro.booking.model;
 
-import io.ilaro.booking.types.UserType;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,11 +11,11 @@ import lombok.Setter;
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "userType", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("CUSTOMER")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private UserType userType;
     private String email;
     private String password;
     private String firstName;

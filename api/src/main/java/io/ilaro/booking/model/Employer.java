@@ -1,7 +1,6 @@
 package io.ilaro.booking.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +11,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Table(name = "users")
+@DiscriminatorValue("EMPLOYER")
 public class Employer extends User {
     @ManyToMany
     @JoinTable(
