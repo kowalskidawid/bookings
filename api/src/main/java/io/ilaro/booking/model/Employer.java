@@ -12,6 +12,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@DiscriminatorValue("EMPLOYER")
 public class Employer extends User {
     @ManyToMany
     @JoinTable(

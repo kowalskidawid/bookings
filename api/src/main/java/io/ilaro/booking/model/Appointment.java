@@ -32,5 +32,6 @@ public class Appointment {
     private Set<Service> services;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
+    @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
 }

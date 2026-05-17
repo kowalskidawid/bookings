@@ -1,13 +1,22 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-
 import App from "./App";
+import { keycloak } from "./providers/keycloak";
 
-const container = document.getElementById("root") as HTMLElement;
-const root = createRoot(container);
-
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+keycloak
+  .init({
+    onLoad: "check-sso",
+    pkceMethod: "S256",
+    checkLoginIframe: false,
+  })
+  .then(() => {
+    const container = document.getElementById("root") as HTMLElement;
+    createRoot(container).render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  })
+  .catch((err) => {
+    console.error("Keycloak init failed", err);
+  });

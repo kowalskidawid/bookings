@@ -7,8 +7,6 @@ public record UserResponse(
         UserType userType,
         String email,
         String firstName,
-        String password,
         String lastName,
         String phoneNumber
-) {
-}
+) {}

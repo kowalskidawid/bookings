@@ -1,9 +1,12 @@
 package io.ilaro.booking.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public record UserRequest(
-    String email,
-    String firstName,
-    String password,
-    String lastName,
-    String phoneNumber
+        @NotBlank @Email String email,
+        @NotBlank String firstName,
+        @NotBlank String password,
+        @NotBlank String lastName,
+        String phoneNumber
 ) {}

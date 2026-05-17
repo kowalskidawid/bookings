@@ -1,0 +1,77 @@
+{
+  "realm": "booking",
+  "displayName": "Booking",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "bruteForceProtected": false,
+  "roles": {
+    "realm": [
+      { "name": "admin",    "composite": false },
+      { "name": "employer", "composite": false },
+      { "name": "customer", "composite": false }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "booking-app",
+      "name": "Booking App",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:3000/*",
+        "http://localhost:3000",
+        "http://localhost:5173/*",
+        "http://localhost:5173"
+      ],
+      "webOrigins": [
+        "http://localhost:3000",
+        "http://localhost:5173"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "email": "admin@booking.local",
+      "firstName": "Admin",
+      "lastName": "User",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin"]
+    },
+    {
+      "username": "employer",
+      "email": "employer@booking.local",
+      "firstName": "Jan",
+      "lastName": "Kowalski",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "employer123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["employer"]
+    }
+  ]
+}
