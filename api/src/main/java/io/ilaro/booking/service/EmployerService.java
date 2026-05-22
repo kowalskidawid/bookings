@@ -13,9 +13,12 @@ import io.ilaro.booking.repository.EmployerRepository;
 import io.ilaro.booking.repository.ServiceRepository;
 import io.ilaro.booking.specification.EmployerSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.Set;
@@ -64,8 +67,15 @@ public class EmployerService {
         if (!employerRepository.existsById(id)) {
             throw new ResourceNotFoundException("Employer not found: " + id);
         }
-        employerRepository.deleteById(id);
-    }
+        try {
+            employerRepository.deleteById(id);
+            employerRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Nie można usunąć pracownika, ponieważ ma przypisane aktywne wizyty."
+            );
+    }}
 
     private Set<Service> resolveServices(Set<Long> ids) {
         if (ids == null || ids.isEmpty()) return Collections.emptySet();

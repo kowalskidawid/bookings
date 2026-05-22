@@ -16,9 +16,6 @@ export const UserCreate = () => {
         <Form.Item name="lastName" label="Nazwisko" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="password" label="Hasło" rules={[{ required: true }]}>
-          <Input.Password />
-        </Form.Item>
         <Form.Item name="phoneNumber" label="Telefon">
           <Input />
         </Form.Item>

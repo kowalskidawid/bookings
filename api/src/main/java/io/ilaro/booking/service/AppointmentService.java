@@ -18,6 +18,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
@@ -47,12 +50,15 @@ public class AppointmentService {
     @Transactional
     public AppointmentResponse create(AppointmentRequest request) {
         Appointment appointment = appointmentMapper.toEntity(request);
-        appointment.setReadableId(UUID.randomUUID().toString());
+        appointment.setReadableId(generateReadableId());
         appointment.setClient(resolveUser(request.clientId()));
         appointment.setEmployer(resolveUser(request.employerId()));
         appointment.setServices(resolveServices(request.serviceIds()));
         appointment.setStatus(AppointmentStatus.BOOKED);
-        return appointmentMapper.toResponse(appointmentRepository.save(appointment));
+
+        AppointmentResponse response = appointmentMapper.toResponse(appointmentRepository.save(appointment));
+        emailService.sendBookingConfirmation(response);
+        return response;
     }
 
     @Transactional
@@ -90,5 +96,15 @@ public class AppointmentService {
                 .map(sid -> serviceRepository.findById(sid)
                         .orElseThrow(() -> new ResourceNotFoundException("Service not found: " + sid)))
                 .collect(Collectors.toSet());
+    }
+
+    private String generateReadableId() {
+
+        String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
+
+        SecureRandom random = new SecureRandom();
+        int randomPart = random.nextInt(900000) + 100000;
+
+        return datePart + randomPart;
     }
 }

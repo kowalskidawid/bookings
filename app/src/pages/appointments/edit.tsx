@@ -60,10 +60,14 @@ export const AppointmentEdit = () => {
         <Form.Item name="serviceIds" label="Usługi">
           <Select mode="multiple" {...serviceSelectProps} placeholder="Wybierz usługi" />
         </Form.Item>
-        <Form.Item name="startAt" label="Rozpoczęcie" rules={[{ required: true }]}>
+        <Form.Item name="startAt" label="Rozpoczęcie"  rules={[{ required: true }]} getValueProps={(value) => ({
+          value: value ? dayjs(value) : "",
+        })}>
           <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: "100%" }} />
         </Form.Item>
-        <Form.Item name="endAt" label="Zakończenie" rules={[{ required: true }]}>
+        <Form.Item name="endAt" label="Zakończenie" rules={[{ required: true }]} getValueProps={(value) => ({
+          value: value ? dayjs(value) : "",
+        })}>
           <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: "100%" }} />
         </Form.Item>
         <Form.Item name="status" label="Status">

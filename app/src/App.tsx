@@ -10,6 +10,14 @@ import {
 } from "@refinedev/antd";
 import "@refinedev/antd/dist/reset.css";
 
+import {
+  AppstoreOutlined,
+  CalendarOutlined,
+  TeamOutlined,
+  IdcardOutlined,
+  ScheduleOutlined
+} from "@ant-design/icons";
+
 import routerProvider, {
   CatchAllNavigate,
   DocumentTitleHandler,
@@ -19,7 +27,7 @@ import routerProvider, {
 import { App as AntdApp, ConfigProvider } from "antd";
 import plPL from "antd/locale/pl_PL";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router";
-import { Header } from "./components/header";
+import { Header } from "./components";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import { AppointmentCreate, AppointmentEdit, AppointmentList, AppointmentShow } from "./pages/appointments";
 import { AvailabilityCreate, AvailabilityEdit, AvailabilityList, AvailabilityShow } from "./pages/availabilities";
@@ -55,7 +63,8 @@ function App() {
                     create: "/services/create",
                     edit: "/services/edit/:id",
                     show: "/services/show/:id",
-                    meta: { canDelete: true, label: "Usługi" },
+                    meta: { canDelete: true, label: "Usługi", icon: <AppstoreOutlined /> },
+
                   },
                   {
                     name: "availabilities",
@@ -63,7 +72,7 @@ function App() {
                     create: "/availabilities/create",
                     edit: "/availabilities/edit/:id",
                     show: "/availabilities/show/:id",
-                    meta: { canDelete: true, label: "Dostępności" },
+                    meta: { canDelete: true, label: "Dostępności", icon: <CalendarOutlined /> },
                   },
                   {
                     name: "users",
@@ -71,7 +80,7 @@ function App() {
                     create: "/users/create",
                     edit: "/users/edit/:id",
                     show: "/users/show/:id",
-                    meta: { canDelete: true, label: "Użytkownicy" },
+                    meta: { canDelete: true, label: "Użytkownicy", icon: <TeamOutlined /> },
                   },
                   {
                     name: "employers",
@@ -79,7 +88,7 @@ function App() {
                     create: "/employers/create",
                     edit: "/employers/edit/:id",
                     show: "/employers/show/:id",
-                    meta: { canDelete: true, label: "Pracownicy" },
+                    meta: { canDelete: true, label: "Pracownicy", icon: <IdcardOutlined /> },
                   },
                   {
                     name: "appointments",
@@ -87,7 +96,7 @@ function App() {
                     create: "/appointments/create",
                     edit: "/appointments/edit/:id",
                     show: "/appointments/show/:id",
-                    meta: { canDelete: true, label: "Wizyty" },
+                    meta: { canDelete: true, label: "Wizyty", icon: <ScheduleOutlined />},
                   },
                 ]}
                 options={{
