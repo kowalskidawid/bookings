@@ -38,6 +38,15 @@ public class EmailService {
 
         send(to, "Potwierdzenie przyjęcia rezerwacji – " + appointment.readableId(), html);
     }
+    public void sendWelcomeEmail(String userEmail, String tempPassword) {
+        Context context = new Context();
+        context.setVariable("email", userEmail);
+        context.setVariable("password", tempPassword);
+
+        String htmlContent = templateEngine.process("email/welcome-email", context);
+
+        send(userEmail, "Witamy w Bookings! Twoje tymczasowe hasło", htmlContent);
+    }
 
     @Async
     public void sendAppointmentUpdated(AppointmentResponse appointment) {
@@ -63,5 +72,7 @@ public class EmailService {
         } catch (MessagingException | java.io.UnsupportedEncodingException e) {
             log.error("Nie udało się wysłać maila do {}: {}", to, e.getMessage());
         }
+
+
     }
 }

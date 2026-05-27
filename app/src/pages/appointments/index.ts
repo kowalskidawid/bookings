@@ -1,5 +1,6 @@
 export * from "./list";
 export * from "./create";
+export {default as AppointmentCreate} from "./create"
 export * from "./edit";
 export * from "./show";
 
