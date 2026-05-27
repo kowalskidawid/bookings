@@ -2,7 +2,7 @@ package io.ilaro.booking.service;
 
 import io.ilaro.booking.dto.UserRequest;
 import io.ilaro.booking.dto.UserResponse;
-import io.ilaro.booking.exception.ResourceNotFoundException;
+import io.ilaro.booking.exception.*;
 import io.ilaro.booking.filter.UserFilter;
 import io.ilaro.booking.mapper.UserMapper;
 import io.ilaro.booking.model.User;
@@ -12,10 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.security.SecureRandom;
 
@@ -77,16 +75,11 @@ public class UserService {
         try {
             userRepository.deleteById(id);
             userRepository.flush();
-
             keycloakIntegrationService.deleteUserFromKeycloak(user.getEmail());
         } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Nie można usunąć użytkownika, ponieważ ma przypisane aktywne wizyty."
-            );
+            throw new ActiveAppointmentsException("Nie można usunąć użytkownika, ponieważ ma przypisane aktywne wizyty");
         }
     }
-
     private String generateTemporaryPassword()
     {
         SecureRandom random = new SecureRandom();
