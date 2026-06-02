@@ -3,8 +3,9 @@ spring.datasource.url=jdbc:mysql://localhost:3306/bookings?useSSL=false&serverTi
 spring.datasource.username=user
 spring.datasource.password=password
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=false
+spring.web.error.include-message=always
 
 keycloak.jwk-set-uri=http://localhost:8180/realms/booking/protocol/openid-connect/certs
 keycloak.issuer-uri=http://localhost:8180/realms/booking
@@ -18,3 +19,4 @@ spring.mail.properties.mail.smtp.starttls.enable=false
 
 mail.from=noreply@booking.local
 mail.from-name=Booking
+

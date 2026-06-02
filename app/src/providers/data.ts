@@ -32,16 +32,35 @@ const getAuthHeader = async (): Promise<Record<string, string>> => {
   }
   return keycloak.token ? { Authorization: `Bearer ${keycloak.token}` } : {};
 };
-
 const handleResponse = async (res: Response) => {
   if (!res.ok) {
     if (res.status === 401) {
       keycloak.login();
       return undefined;
     }
-    const body = await res.text().catch(() => res.statusText);
-    throw new Error(body || res.statusText);
+
+    let errorMessage = res.statusText;
+
+    try {
+      const errorData = await res.json();
+
+      if (errorData && errorData.message) {
+        errorMessage = errorData.message;
+      } else {
+        errorMessage = JSON.stringify(errorData);
+      }
+    } catch (e) {
+      const textBody = await res.text().catch(() => "");
+      if (textBody) {
+        errorMessage = textBody;
+      }
+    }
+
+    const error: any = new Error(errorMessage);
+    error.statusCode = res.status;
+    throw error;
   }
+
   if (res.status === 204) return undefined;
   return res.json();
 };
