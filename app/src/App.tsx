@@ -27,7 +27,7 @@ import routerProvider, {
 import { App as AntdApp, ConfigProvider } from "antd";
 import plPL from "antd/locale/pl_PL";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router";
-import { Header } from "./components";
+import { Header, Title } from "./components";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import { AppointmentCreate, AppointmentEdit, AppointmentList, AppointmentShow } from "./pages/appointments";
 import { AvailabilityCreate, AvailabilityEdit, AvailabilityList, AvailabilityShow } from "./pages/availabilities";
@@ -114,7 +114,8 @@ function App() {
                       >
                         <ThemedLayout
                           Header={Header}
-                          Sider={(props) => <ThemedSider {...props} fixed />}
+                          Title={Title}
+                          Sider={(props) => <ThemedSider {...props} Title={Title} fixed />}
                         >
                           <Outlet />
                         </ThemedLayout>
@@ -181,7 +182,22 @@ function App() {
 
                 <RefineKbar />
                 <UnsavedChangesNotifier />
-                <DocumentTitleHandler />
+                <DocumentTitleHandler
+                  handler={({ resource, action, params }) => {
+                    const base = "Booking";
+                    const label = resource?.meta?.label ?? resource?.name;
+                    if (!label) return base;
+                    const actionLabels: Record<string, string> = {
+                      list: label,
+                      create: `Nowy wpis - ${label}`,
+                      edit: `Edycja #${params?.id ?? ""} - ${label}`,
+                      show: `Szczegóły #${params?.id ?? ""} - ${label}`,
+                      clone: `Kopiowanie #${params?.id ?? ""} - ${label}`,
+                    };
+                    const prefix = action ? actionLabels[action] ?? label : label;
+                    return `${prefix} | ${base}`;
+                  }}
+                />
               </Refine>
               <DevtoolsPanel />
             </DevtoolsProvider>

@@ -62,7 +62,7 @@
                         <td style="padding-bottom:12px;vertical-align:top;">
                           <p style="margin:0 0 2px;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;">Status</p>
                           <p style="margin:0;font-size:14px;font-weight:600;">
-                            <span th:switch="${appointment.status}">
+                            <span th:switch="${appointment.status.name()}">
                               <span th:case="'BOOKED'"    style="color:#1677ff;">Zarezerwowana</span>
                               <span th:case="'CONFIRMED'" style="color:#52c41a;">Potwierdzona</span>
                               <span th:case="'FINISHED'"  style="color:#666;">Zakończona</span>

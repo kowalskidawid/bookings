@@ -51,8 +51,8 @@ export const AppointmentEdit = () => {
         })}
         layout="vertical"
       >
-        <Form.Item name="clientId" label="Klient" rules={[{ required: true }]}>
-          <Select {...clientSelectProps} placeholder="Wybierz klienta" showSearch />
+        <Form.Item name="clientId" label="Klient">
+          <Select {...clientSelectProps} placeholder="Wybierz klienta" showSearch disabled />
         </Form.Item>
         <Form.Item name="employerId" label="Pracownik" rules={[{ required: true }]}>
           <Select {...employerSelectProps} placeholder="Wybierz pracownika" showSearch />

@@ -63,6 +63,7 @@ public class PublicBookingService {
         );
 
         int duration = service.getTimeInMinutes();
+        LocalDateTime now = LocalDateTime.now();
         List<TimeSlotResponse> slots = new ArrayList<>();
 
         for (Availability avail : dayAvailabilities) {
@@ -73,11 +74,14 @@ public class PublicBookingService {
                 final LocalDateTime slotStart = current;
                 LocalDateTime slotEnd = slotStart.plusMinutes(duration);
 
+                boolean isPast = !slotStart.isAfter(now);
+
                 boolean hasConflict = existing.stream().anyMatch(appt ->
-                        appt.getStartAt().isBefore(slotEnd) && appt.getEndAt().isAfter(slotStart)
+                        appt.getStatus() != AppointmentStatus.CANCELED
+                                && appt.getStartAt().isBefore(slotEnd) && appt.getEndAt().isAfter(slotStart)
                 );
 
-                if (!hasConflict) {
+                if (!isPast && !hasConflict) {
                     slots.add(new TimeSlotResponse(slotStart, slotEnd));
                 }
                 current = slotEnd;
