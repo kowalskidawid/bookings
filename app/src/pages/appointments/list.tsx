@@ -1,7 +1,9 @@
 import { DeleteButton, EditButton, List, ShowButton, useTable } from "@refinedev/antd";
 import { useList } from "@refinedev/core";
 import { Button, DatePicker, Form, Input, Select, Space, Table, Tag } from "antd";
+import { CalendarOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { Link } from "react-router";
 import { STATUSES, STATUS_COLORS, STATUS_LABELS } from ".";
 
 interface AppointmentResponse {
@@ -58,7 +60,17 @@ export const AppointmentList = () => {
   };
 
   return (
-    <List title="Wizyty">
+    <List
+      title="Wizyty"
+      headerButtons={({ defaultButtons }) => (
+        <>
+          <Link to="/book" target="_blank">
+            <Button icon={<CalendarOutlined />}>Strona rezerwacji</Button>
+          </Link>
+          {defaultButtons}
+        </>
+      )}
+    >
       <Form form={form} layout="inline" onFinish={applyFilters} style={{ marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
         <Form.Item name="readableId">
           <Input placeholder="Identyfikator" allowClear style={{ width: 200 }} />

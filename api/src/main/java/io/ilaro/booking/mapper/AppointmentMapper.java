@@ -25,5 +25,6 @@ public interface AppointmentMapper {
     @Mapping(target = "client", ignore = true)
     @Mapping(target = "employer", ignore = true)
     @Mapping(target = "services", ignore = true)
+    @Mapping(target = "status", ignore = true)
     void updateEntity(AppointmentRequest request, @MappingTarget Appointment appointment);
 }

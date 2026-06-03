@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -23,6 +24,7 @@ interface ServiceDto {
   id: number;
   name: string;
   timeInMinutes: number;
+  basePrice: number;
 }
 
 interface AvailabilityDto {
@@ -75,6 +77,7 @@ export const BookingPage = () => {
   const [loading, setLoading] = useState(false);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [result, setResult] = useState<BookingResult | null>(null);
+  const [bookingError, setBookingError] = useState<string | null>(null);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -121,6 +124,7 @@ export const BookingPage = () => {
   const handleSubmit = async (values: { firstName: string; lastName: string; email: string; phoneNumber?: string }) => {
     if (!selectedService || !selectedEmployer || !selectedSlot) return;
     setLoading(true);
+    setBookingError(null);
     try {
       const res = await fetch(`${API_URL}/api/public/book`, {
         method: "POST",
@@ -136,12 +140,14 @@ export const BookingPage = () => {
         }),
       });
       if (!res.ok) {
-        const msg = await res.text().catch(() => "Błąd rezerwacji");
-        throw new Error(msg);
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.message ?? "Nie udało się zarezerwować wizyty. Wybrany termin może być już zajęty.");
       }
       const data: BookingResult = await res.json();
       setResult(data);
       setStep(4);
+    } catch (e) {
+      setBookingError(e instanceof Error ? e.message : "Nie udało się zarezerwować wizyty.");
     } finally {
       setLoading(false);
     }
@@ -155,6 +161,7 @@ export const BookingPage = () => {
     setSelectedSlot(null);
     setSlots([]);
     setResult(null);
+    setBookingError(null);
     form.resetFields();
   };
 
@@ -220,6 +227,9 @@ export const BookingPage = () => {
                           <Tag icon={<ClockCircleOutlined />} color="blue">
                             {s.timeInMinutes} min
                           </Tag>
+                          {s.basePrice != null && (
+                            <Tag color="green">{Number(s.basePrice).toFixed(2)} zł</Tag>
+                          )}
                         </div>
                       </Card>
                     </Col>
@@ -344,6 +354,14 @@ export const BookingPage = () => {
                       </Col>
                       <Col span={16}>{selectedService?.name}</Col>
                     </Row>
+                    {selectedService?.basePrice != null && (
+                      <Row gutter={8}>
+                        <Col span={8}>
+                          <Typography.Text type="secondary">Cena</Typography.Text>
+                        </Col>
+                        <Col span={16}>{Number(selectedService.basePrice).toFixed(2)} zł</Col>
+                      </Row>
+                    )}
                     <Row gutter={8}>
                       <Col span={8}>
                         <Typography.Text type="secondary">Pracownik</Typography.Text>
@@ -363,6 +381,15 @@ export const BookingPage = () => {
                     </Row>
                   </div>
                 </div>
+
+                {bookingError && (
+                  <Alert
+                    type="error"
+                    showIcon
+                    message={bookingError}
+                    style={{ marginBottom: 16 }}
+                  />
+                )}
 
                 <Form
                   form={form}

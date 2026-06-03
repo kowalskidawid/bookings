@@ -13,6 +13,7 @@ import "@refinedev/antd/dist/reset.css";
 import {
   AppstoreOutlined,
   CalendarOutlined,
+  ClockCircleOutlined,
   TeamOutlined,
   IdcardOutlined,
   ScheduleOutlined
@@ -27,7 +28,7 @@ import routerProvider, {
 import { App as AntdApp, ConfigProvider } from "antd";
 import plPL from "antd/locale/pl_PL";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router";
-import { Header } from "./components";
+import { Header, Title } from "./components";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import { AppointmentCreate, AppointmentEdit, AppointmentList, AppointmentShow } from "./pages/appointments";
 import { AvailabilityCreate, AvailabilityEdit, AvailabilityList, AvailabilityShow } from "./pages/availabilities";
@@ -36,6 +37,7 @@ import { EmployerCreate, EmployerEdit, EmployerList, EmployerShow } from "./page
 import { ForgotPassword } from "./pages/forgotPassword";
 import { Login } from "./pages/login";
 import { Register } from "./pages/register";
+import { SchedulePage } from "./pages/schedule";
 import { ServiceCreate, ServiceEdit, ServiceList, ServiceShow } from "./pages/services";
 import { UserCreate, UserEdit, UserList, UserShow } from "./pages/users";
 import { authProvider } from "./providers/auth";
@@ -72,7 +74,7 @@ function App() {
                     create: "/availabilities/create",
                     edit: "/availabilities/edit/:id",
                     show: "/availabilities/show/:id",
-                    meta: { canDelete: true, label: "Dostępności", icon: <CalendarOutlined /> },
+                    meta: { canDelete: true, label: "Dostępności", icon: <ClockCircleOutlined /> },
                   },
                   {
                     name: "users",
@@ -98,6 +100,11 @@ function App() {
                     show: "/appointments/show/:id",
                     meta: { canDelete: true, label: "Wizyty", icon: <ScheduleOutlined />},
                   },
+                  {
+                    name: "schedule",
+                    list: "/schedule",
+                    meta: { label: "Kalendarz", icon: <CalendarOutlined /> },
+                  },
                 ]}
                 options={{
                   syncWithLocation: true,
@@ -114,7 +121,8 @@ function App() {
                       >
                         <ThemedLayout
                           Header={Header}
-                          Sider={(props) => <ThemedSider {...props} fixed />}
+                          Title={Title}
+                          Sider={(props) => <ThemedSider {...props} Title={Title} fixed />}
                         >
                           <Outlet />
                         </ThemedLayout>
@@ -158,6 +166,8 @@ function App() {
                       <Route path="show/:id" element={<AppointmentShow />} />
                     </Route>
 
+                    <Route path="/schedule" element={<SchedulePage />} />
+
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>
 
@@ -181,7 +191,22 @@ function App() {
 
                 <RefineKbar />
                 <UnsavedChangesNotifier />
-                <DocumentTitleHandler />
+                <DocumentTitleHandler
+                  handler={({ resource, action, params }) => {
+                    const base = "Booking";
+                    const label = resource?.meta?.label ?? resource?.name;
+                    if (!label) return base;
+                    const actionLabels: Record<string, string> = {
+                      list: label,
+                      create: `Nowy wpis - ${label}`,
+                      edit: `Edycja #${params?.id ?? ""} - ${label}`,
+                      show: `Szczegóły #${params?.id ?? ""} - ${label}`,
+                      clone: `Kopiowanie #${params?.id ?? ""} - ${label}`,
+                    };
+                    const prefix = action ? actionLabels[action] ?? label : label;
+                    return `${prefix} | ${base}`;
+                  }}
+                />
               </Refine>
               <DevtoolsPanel />
             </DevtoolsProvider>

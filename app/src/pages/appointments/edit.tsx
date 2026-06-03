@@ -2,7 +2,7 @@ import { Edit, useForm, useSelect } from "@refinedev/antd";
 import { DatePicker, Form, Select } from "antd";
 import dayjs from "dayjs";
 import { useEffect } from "react";
-import { STATUSES, STATUS_LABELS } from ".";
+import { STATUS_LABELS, STATUS_TRANSITIONS } from ".";
 
 export const AppointmentEdit = () => {
   const { formProps, saveButtonProps, query, onFinish } = useForm();
@@ -51,8 +51,8 @@ export const AppointmentEdit = () => {
         })}
         layout="vertical"
       >
-        <Form.Item name="clientId" label="Klient" rules={[{ required: true }]}>
-          <Select {...clientSelectProps} placeholder="Wybierz klienta" showSearch />
+        <Form.Item name="clientId" label="Klient">
+          <Select {...clientSelectProps} placeholder="Wybierz klienta" showSearch disabled />
         </Form.Item>
         <Form.Item name="employerId" label="Pracownik" rules={[{ required: true }]}>
           <Select {...employerSelectProps} placeholder="Wybierz pracownika" showSearch />
@@ -71,8 +71,13 @@ export const AppointmentEdit = () => {
           <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: "100%" }} />
         </Form.Item>
         <Form.Item name="status" label="Status">
-          <Select>
-            {STATUSES.map((s) => <Select.Option key={s} value={s}>{STATUS_LABELS[s]}</Select.Option>)}
+          <Select disabled={!record?.status || STATUS_TRANSITIONS[record.status]?.length === 0}>
+            {(record?.status
+              ? [record.status, ...(STATUS_TRANSITIONS[record.status] ?? [])]
+              : []
+            ).map((s) => (
+              <Select.Option key={s} value={s}>{STATUS_LABELS[s] ?? s}</Select.Option>
+            ))}
           </Select>
         </Form.Item>
       </Form>

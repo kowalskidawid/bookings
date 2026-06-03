@@ -6,6 +6,7 @@ interface ServiceResponse {
   id: number;
   name: string;
   timeInMinutes: number;
+  basePrice: number;
 }
 
 interface ServiceFilter {
@@ -54,6 +55,11 @@ export const ServiceList = () => {
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="name" title="Nazwa" />
         <Table.Column dataIndex="timeInMinutes" title="Czas (min)" />
+        <Table.Column
+          dataIndex="basePrice"
+          title="Cena (zł)"
+          render={(v) => (v != null ? Number(v).toFixed(2) : "-")}
+        />
         <Table.Column
           title="Akcje"
           render={(_, record: ServiceResponse) => (
