@@ -13,6 +13,7 @@ import "@refinedev/antd/dist/reset.css";
 import {
   AppstoreOutlined,
   CalendarOutlined,
+  ClockCircleOutlined,
   TeamOutlined,
   IdcardOutlined,
   ScheduleOutlined
@@ -36,6 +37,7 @@ import { EmployerCreate, EmployerEdit, EmployerList, EmployerShow } from "./page
 import { ForgotPassword } from "./pages/forgotPassword";
 import { Login } from "./pages/login";
 import { Register } from "./pages/register";
+import { SchedulePage } from "./pages/schedule";
 import { ServiceCreate, ServiceEdit, ServiceList, ServiceShow } from "./pages/services";
 import { UserCreate, UserEdit, UserList, UserShow } from "./pages/users";
 import { authProvider } from "./providers/auth";
@@ -72,7 +74,7 @@ function App() {
                     create: "/availabilities/create",
                     edit: "/availabilities/edit/:id",
                     show: "/availabilities/show/:id",
-                    meta: { canDelete: true, label: "Dostępności", icon: <CalendarOutlined /> },
+                    meta: { canDelete: true, label: "Dostępności", icon: <ClockCircleOutlined /> },
                   },
                   {
                     name: "users",
@@ -97,6 +99,11 @@ function App() {
                     edit: "/appointments/edit/:id",
                     show: "/appointments/show/:id",
                     meta: { canDelete: true, label: "Wizyty", icon: <ScheduleOutlined />},
+                  },
+                  {
+                    name: "schedule",
+                    list: "/schedule",
+                    meta: { label: "Kalendarz", icon: <CalendarOutlined /> },
                   },
                 ]}
                 options={{
@@ -158,6 +165,8 @@ function App() {
                       <Route path="edit/:id" element={<AppointmentEdit />} />
                       <Route path="show/:id" element={<AppointmentShow />} />
                     </Route>
+
+                    <Route path="/schedule" element={<SchedulePage />} />
 
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>

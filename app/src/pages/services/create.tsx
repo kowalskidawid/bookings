@@ -13,6 +13,9 @@ export const ServiceCreate = () => {
         <Form.Item name="timeInMinutes" label="Czas (minuty)" rules={[{ required: true }]}>
           <InputNumber min={1} style={{ width: "100%" }} />
         </Form.Item>
+        <Form.Item name="basePrice" label="Cena bazowa (zł)" rules={[{ required: true }]}>
+          <InputNumber min={0} step={0.01} precision={2} style={{ width: "100%" }} />
+        </Form.Item>
       </Form>
     </Create>
   );

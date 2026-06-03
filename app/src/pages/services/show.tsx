@@ -12,6 +12,9 @@ export const ServiceShow = () => {
         <Descriptions.Item label="ID">{record?.id}</Descriptions.Item>
         <Descriptions.Item label="Nazwa">{record?.name}</Descriptions.Item>
         <Descriptions.Item label="Czas (minuty)">{record?.timeInMinutes}</Descriptions.Item>
+        <Descriptions.Item label="Cena bazowa (zł)">
+          {record?.basePrice != null ? Number(record.basePrice).toFixed(2) : "-"}
+        </Descriptions.Item>
       </Descriptions>
     </Show>
   );

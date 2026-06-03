@@ -2,13 +2,16 @@ package io.ilaro.booking.service;
 
 import io.ilaro.booking.dto.AppointmentRequest;
 import io.ilaro.booking.dto.AppointmentResponse;
+import io.ilaro.booking.exception.InvalidStatusTransitionException;
 import io.ilaro.booking.exception.ResourceNotFoundException;
 import io.ilaro.booking.filter.AppointmentFilter;
 import io.ilaro.booking.mapper.AppointmentMapper;
 import io.ilaro.booking.model.Appointment;
+import io.ilaro.booking.model.Employer;
 import io.ilaro.booking.model.Service;
 import io.ilaro.booking.model.User;
 import io.ilaro.booking.repository.AppointmentRepository;
+import io.ilaro.booking.repository.EmployerRepository;
 import io.ilaro.booking.repository.ServiceRepository;
 import io.ilaro.booking.repository.UserRepository;
 import io.ilaro.booking.specification.AppointmentSpecification;
@@ -33,8 +36,10 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
     private final ServiceRepository serviceRepository;
+    private final EmployerRepository employerRepository;
     private final AppointmentMapper appointmentMapper;
     private final EmailService emailService;
+    private final AppointmentValidator appointmentValidator;
 
     public Page<AppointmentResponse> findAll(AppointmentFilter filter, Pageable pageable) {
         return appointmentRepository.findAll(AppointmentSpecification.fromFilter(filter), pageable)
@@ -49,10 +54,13 @@ public class AppointmentService {
 
     @Transactional
     public AppointmentResponse create(AppointmentRequest request) {
+        Employer employer = resolveEmployer(request.employerId());
+        appointmentValidator.validate(employer, request.startAt(), request.endAt(), null);
+
         Appointment appointment = appointmentMapper.toEntity(request);
         appointment.setReadableId(generateReadableId());
         appointment.setClient(resolveUser(request.clientId()));
-        appointment.setEmployer(resolveUser(request.employerId()));
+        appointment.setEmployer(employer);
         appointment.setServices(resolveServices(request.serviceIds()));
         appointment.setStatus(AppointmentStatus.BOOKED);
 
@@ -65,11 +73,18 @@ public class AppointmentService {
     public AppointmentResponse update(Long id, AppointmentRequest request) {
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Appointment not found: " + id));
+        Employer employer = resolveEmployer(request.employerId());
+        appointmentValidator.validate(employer, request.startAt(), request.endAt(), id);
+
         appointmentMapper.updateEntity(request, appointment);
         appointment.setClient(resolveUser(request.clientId()));
-        appointment.setEmployer(resolveUser(request.employerId()));
+        appointment.setEmployer(employer);
         appointment.setServices(resolveServices(request.serviceIds()));
-        if (request.status() != null) {
+        if (request.status() != null && request.status() != appointment.getStatus()) {
+            if (!appointment.getStatus().canTransitionTo(request.status())) {
+                throw new InvalidStatusTransitionException(
+                        "Niedozwolona zmiana statusu wizyty: " + appointment.getStatus() + " → " + request.status());
+            }
             appointment.setStatus(request.status());
         }
         AppointmentResponse response = appointmentMapper.toResponse(appointmentRepository.save(appointment));
@@ -88,6 +103,11 @@ public class AppointmentService {
     private User resolveUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
+    }
+
+    private Employer resolveEmployer(Long employerId) {
+        return employerRepository.findById(employerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employer not found: " + employerId));
     }
 
     private Set<Service> resolveServices(Set<Long> ids) {

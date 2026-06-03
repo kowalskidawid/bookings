@@ -29,6 +29,7 @@ public class PublicBookingService {
     private final EmployerMapper employerMapper;
     private final ServiceMapper serviceMapper;
     private final EmailService emailService;
+    private final AppointmentValidator appointmentValidator;
 
     public List<ServiceResponse> getServices() {
         return serviceRepository.findAll().stream()
@@ -102,19 +103,23 @@ public class PublicBookingService {
             return userRepository.save(u);
         });
 
-        User employer = userRepository.findById(request.employerId())
+        Employer employer = employerRepository.findById(request.employerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Employer not found: " + request.employerId()));
 
         io.ilaro.booking.model.Service service = serviceRepository.findById(request.serviceId())
                 .orElseThrow(() -> new ResourceNotFoundException("Service not found: " + request.serviceId()));
+
+        LocalDateTime startAt = request.startAt();
+        LocalDateTime endAt = startAt.plusMinutes(service.getTimeInMinutes());
+        appointmentValidator.validate(employer, startAt, endAt, null);
 
         Appointment appointment = new Appointment();
         appointment.setReadableId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         appointment.setClient(customer);
         appointment.setEmployer(employer);
         appointment.setServices(Set.of(service));
-        appointment.setStartAt(request.startAt());
-        appointment.setEndAt(request.startAt().plusMinutes(service.getTimeInMinutes()));
+        appointment.setStartAt(startAt);
+        appointment.setEndAt(endAt);
         appointment.setStatus(AppointmentStatus.BOOKED);
 
         AppointmentResponse response = appointmentMapper.toResponse(appointmentRepository.save(appointment));
